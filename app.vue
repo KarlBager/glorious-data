@@ -11,6 +11,11 @@ let mouseY = ref(0);
 let speed = ref(0);
 let mouseDownEvent = ref({});
 
+let pluginNames = ref([]);
+let mediaDevices = ref([]);
+
+let connectionType = ref('');
+
 let location = ref({});
 
 const startTime = Date.now();
@@ -68,7 +73,11 @@ onMounted(() => {
 
 navigator.geolocation.getCurrentPosition((position) => {
   location.value = position;
+  if(position == undefined){
+    location.value = {};
+  }
 });
+
 
 
   document.addEventListener('click', (event) => {
@@ -105,28 +114,56 @@ rotation.value = event.rotationRate;
 });
 
 
-setInterval(updateDisplay, 10);
+setInterval(updateDisplay, 50);
 
 });
 
 
 
+
 function updateDisplay(){
 
+  if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+  navigator.mediaDevices.enumerateDevices().then(devices => {
+    mediaDevices.value = devices.map(device => device.kind).join(', ');
+  });
+}
+
+
+if ('connection' in navigator) {
+  connectionType.value = navigator.connection.effectiveType;
+}
+
+
+
+
+  if (navigator.plugins.length > 0) {
+  let pluginNames = [];
+  for (let i = 0; i < navigator.plugins.length; i++) {
+    pluginNames.push(navigator.plugins[i].name);
+  }
+  pluginNames.value = pluginNames;
+}
+
+
+if ('getBattery' in navigator) {
   navigator.getBattery().then(battery => {
     if(battery){
   batteryLevel.value = battery.level;
   batteryCharging.value = battery.charging;
 }
 });
+}
 
   elapsedTime.value = Math.floor((Date.now() - startTime) / 1000); // Time in seconds
-  
 
 display.value = ``;
 
 
   display.value += `User Agent: ${navigator.userAgent};
+  Platform: ${navigator.platform};
+  CPU Cores Available: ${navigator.hardwareConcurrency};
+  Device Memory Available: ${navigator.deviceMemory};
   Acceleration X: ${Math.round(acceleration.value.x)};
   Acceleration Y: ${Math.round(acceleration.value.y)};
   Acceleration Z: ${Math.round(acceleration.value.z)};
@@ -145,7 +182,9 @@ display.value = ``;
   Time Since Page Load: ${elapsedTime.value} seconds;
   Battery Level: ${(batteryLevel.value * 100).toFixed(0)}%;
   Charging: ${batteryCharging.value ? 'Yes' : 'No'};
-  Network Type: ${navigator.connection.effectiveType};
+  Network Type: ${connectionType.value};
+  Installed Plugins: ${pluginNames.value};
+  Media Devices Available: ${mediaDevices.value};
   Language: ${navigator.language};
   Screen Size: ${window.innerWidth}x${window.innerHeight};
 `
