@@ -126,7 +126,8 @@ function updateDisplay(){
 display.value = ``;
 
 
-  display.value += `Acceleration X: ${Math.round(acceleration.value.x)};
+  display.value += `User Agent: ${navigator.userAgent};
+  Acceleration X: ${Math.round(acceleration.value.x)};
   Acceleration Y: ${Math.round(acceleration.value.y)};
   Acceleration Z: ${Math.round(acceleration.value.z)};
   Rotation Alpha: ${Math.round(rotation.value.alpha)};
@@ -142,7 +143,6 @@ display.value = ``;
   Keys Held: ${Array.from(keysPressed.value).join(' + ')};
   Last Key Pressed: ${lastKey.value};
   Time Since Page Load: ${elapsedTime.value} seconds;
-  User Agent: ${navigator.userAgent};
   Battery Level: ${(batteryLevel.value * 100).toFixed(0)}%;
   Charging: ${batteryCharging.value ? 'Yes' : 'No'};
   Network Type: ${navigator.connection.effectiveType};
